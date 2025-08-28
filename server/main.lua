@@ -343,8 +343,13 @@ RegisterNetEvent('landonsloans:server:applyForLoan', function(amount, term)
         SendNotification(src, 'Loan approved! $' .. amount .. ' has been deposited to your account.', 'success')
         LogTransaction('loan_issued', amount, 'Automated loan issued', citizenid, nil, result.loanId)
         UpdateCompanyBalance(-amount)
+        
+        -- Close the UI after successful loan
+        TriggerClientEvent('landonsloans:client:closeUI', src)
+        print("[Landon's Loans] Loan approved and UI closed for citizen: " .. citizenid)
     else
-        SendNotification(src, result.reason, 'error')
+        SendNotification(src, result.reason or 'Loan application failed', 'error')
+        print("[Landon's Loans] Loan denied for citizen: " .. citizenid .. " - Reason: " .. (result.reason or 'Unknown'))
     end
 end)
 

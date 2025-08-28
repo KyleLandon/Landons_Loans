@@ -459,9 +459,12 @@ function submitLoanApplication() {
         body: JSON.stringify(requestData)
     }).then(response => {
         console.log('[Landon\'s Loans] Fetch response received:', response);
-        return response.json();
+        // Don't try to parse JSON since QBCore NUI callbacks return text
+        return response.text();
     }).then(data => {
         console.log('[Landon\'s Loans] Response data:', data);
+        // Close the modal after successful submission
+        closeAllModals();
     }).catch(error => {
         console.error('[Landon\'s Loans] Fetch error:', error);
     });

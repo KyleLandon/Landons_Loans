@@ -137,6 +137,18 @@ RegisterNetEvent('landonsloans:client:showStaffLoanData', function(loans, citize
     ShowStaffLoanDataUI(loans, citizenid)
 end)
 
+RegisterNetEvent('landonsloans:client:closeUI', function()
+    print("[Landon's Loans] Server requested UI close")
+    SetNuiFocus(false, false)
+    isUIOpen = false
+    SendNUIMessage({type = "forceClose"})
+    
+    -- Force enable all controls
+    for i = 0, 500 do
+        EnableControlAction(0, i, true)
+    end
+end)
+
 -- UI Functions
 function ShowCreditScoreUI(creditScore)
     print("[Landon's Loans] ShowCreditScoreUI called with score: " .. tostring(creditScore))
@@ -284,9 +296,7 @@ RegisterNUICallback('applyForLoan', function(data, cb)
     print("[Landon's Loans] Client: Triggering server event with amount:", amount, "term:", term)
     TriggerServerEvent('landonsloans:server:applyForLoan', amount, term)
     
-    SetNuiFocus(false, false)
-    isUIOpen = false
-    
+    -- Don't close UI immediately - let the server handle the response
     cb({success = true})
 end)
 
