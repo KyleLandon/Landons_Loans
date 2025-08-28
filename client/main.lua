@@ -239,16 +239,31 @@ end
 
 -- NUI Callbacks
 RegisterNUICallback('closeUI', function(data, cb)
+    print("[Landon's Loans] Closing UI and releasing focus")
+    
+    -- Force disable NUI focus
     SetNuiFocus(false, false)
     isUIOpen = false
     
-    -- Ensure cursor is disabled and player can move
-    DisplayRadar(true)
-    EnableControlAction(0, 1, true)  -- LookLeftRight
-    EnableControlAction(0, 2, true)  -- LookUpDown
-    EnableControlAction(0, 30, true) -- MoveLeftRight
-    EnableControlAction(0, 31, true) -- MoveUpDown
+    -- Force enable all player controls
+    for i = 0, 500 do
+        EnableControlAction(0, i, true)
+    end
     
+    -- Specifically ensure movement controls are enabled
+    EnableControlAction(0, 1, true)   -- LookLeftRight
+    EnableControlAction(0, 2, true)   -- LookUpDown
+    EnableControlAction(0, 30, true)  -- MoveLeftRight
+    EnableControlAction(0, 31, true)  -- MoveUpDown
+    EnableControlAction(0, 32, true)  -- MoveUpOnly
+    EnableControlAction(0, 33, true)  -- MoveDownOnly
+    EnableControlAction(0, 34, true)  -- MoveLeftOnly
+    EnableControlAction(0, 35, true)  -- MoveRightOnly
+    
+    -- Force cursor to be invisible
+    SetCursorLocation(0.5, 0.5)
+    
+    print("[Landon's Loans] UI closed, focus released, controls enabled")
     cb('ok')
 end)
 
@@ -318,17 +333,23 @@ CreateThread(function()
         if isUIOpen then
             -- Force close on ESC key
             if IsControlJustPressed(0, 322) then -- ESC key
+                print("[Landon's Loans] ESC pressed - force closing UI")
                 SetNuiFocus(false, false)
                 isUIOpen = false
                 SendNUIMessage({type = "forceClose"})
+                
+                -- Force enable all controls
+                for i = 0, 500 do
+                    EnableControlAction(0, i, true)
+                end
             end
             
-            -- Disable some controls while UI is open
-            DisableControlAction(0, 1, true)   -- LookLeftRight
-            DisableControlAction(0, 2, true)   -- LookUpDown
+            -- Only disable specific actions that might interfere
             DisableControlAction(0, 142, true) -- MeleeAttackAlternate
             DisableControlAction(0, 18, true)  -- Enter/Confirm
             DisableControlAction(0, 322, false) -- ESC (allow ESC to work)
+            DisableControlAction(0, 24, true)  -- Attack
+            DisableControlAction(0, 25, true)  -- Aim
         end
     end
 end)
@@ -343,6 +364,21 @@ AddEventHandler('onResourceStop', function(resourceName)
         SetNuiFocus(false, false)
         isUIOpen = false
     end
+end)
+
+-- Force close UI command for debugging
+RegisterCommand('closeloansui', function()
+    print("[Landon's Loans] Force closing UI via command")
+    SetNuiFocus(false, false)
+    isUIOpen = false
+    SendNUIMessage({type = "forceClose"})
+    
+    -- Force enable all controls
+    for i = 0, 500 do
+        EnableControlAction(0, i, true)
+    end
+    
+    QBCore.Functions.Notify('Loans UI force closed', 'success')
 end)
 
 print("[Landon's Loans] Client module loaded successfully")

@@ -95,7 +95,21 @@ function initializeEventListeners() {
     // Close modal when clicking outside
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
+            console.log('[Landon\'s Loans] Modal background clicked, closing modal');
             closeModal(event.target.id);
+        }
+    });
+    
+    // Also handle clicks on close buttons
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('close') || event.target.hasAttribute('data-close')) {
+            console.log('[Landon\'s Loans] Close button clicked');
+            const modalId = event.target.getAttribute('data-modal') || event.target.getAttribute('data-close');
+            if (modalId) {
+                closeModal(modalId);
+            } else {
+                closeAllModals();
+            }
         }
     });
 }
@@ -169,16 +183,22 @@ function closeModal(modalId) {
 }
 
 function closeAllModals() {
+    console.log('[Landon\'s Loans] Closing all modals');
     document.querySelectorAll('.modal').forEach(modal => {
         modal.style.display = 'none';
     });
     document.body.style.overflow = 'auto';
     
     // Always close NUI when closing all modals
+    console.log('[Landon\'s Loans] Sending closeUI message to client');
     fetch(`https://${GetParentResourceName()}/closeUI`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
+    }).then(() => {
+        console.log('[Landon\'s Loans] closeUI message sent successfully');
+    }).catch(err => {
+        console.error('[Landon\'s Loans] Failed to send closeUI message:', err);
     });
 }
 
