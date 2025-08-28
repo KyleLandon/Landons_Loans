@@ -174,6 +174,7 @@ function closeModal(modalId) {
     // Check if any modals are still open
     const openModals = document.querySelectorAll('.modal[style*="block"]');
     console.log('[Landon\'s Loans] Open modals remaining:', openModals.length);
+    console.log('[Landon\'s Loans] Open modals:', Array.from(openModals).map(m => m.id));
     
     // Only close NUI focus if no other modals are open
     if (openModals.length === 0) {
@@ -183,7 +184,13 @@ function closeModal(modalId) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({})
+        }).then(() => {
+            console.log('[Landon\'s Loans] closeUI message sent successfully');
+        }).catch(err => {
+            console.error('[Landon\'s Loans] Failed to send closeUI message:', err);
         });
+    } else {
+        console.log('[Landon\'s Loans] Still have open modals, NOT sending closeUI');
     }
 }
 

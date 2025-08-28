@@ -267,14 +267,15 @@ end
 
 -- NUI Callbacks
 RegisterNUICallback('closeUI', function(data, cb)
-    print("[Landon's Loans] Closing UI and releasing focus")
+    print("[Landon's Loans] closeUI callback received")
+    print("[Landon's Loans] Current isUIOpen state:", isUIOpen)
     
     -- Properly disable NUI focus according to FiveM docs
     -- SetNuiFocus(keyboard, mouse) - both false to completely disable
     SetNuiFocus(false, false)
     isUIOpen = false
     
-    print("[Landon's Loans] NUI focus disabled")
+    print("[Landon's Loans] SetNuiFocus(false, false) called - NUI focus should be disabled")
     cb('ok')
 end)
 
@@ -380,5 +381,11 @@ RegisterCommand('closeloansui', function()
     
     QBCore.Functions.Notify('Loans UI force closed', 'success')
 end)
+
+-- General NUI focus fix command (found online solution)
+RegisterCommand("nuiclose", function(source, args, rawCommand)
+    SetNuiFocus(false, false)
+    print("[Landon's Loans] Emergency NUI focus disabled via nuiclose command")
+end, false)
 
 print("[Landon's Loans] Client module loaded successfully")
