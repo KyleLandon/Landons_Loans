@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landon's Loans</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Credit Score Display -->
+    <div id="creditScoreModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-credit-card"></i> Credit Score Report</h2>
+                <span class="close" data-modal="creditScoreModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="credit-score-display">
+                    <div class="score-circle">
+                        <div class="score-number" id="creditScoreNumber">650</div>
+                        <div class="score-label">CREDIT SCORE</div>
+                    </div>
+                    <div class="score-details">
+                        <div class="score-rating" id="creditRating">Good</div>
+                        <div class="score-range">Range: 300-850</div>
+                    </div>
+                </div>
+                <div class="score-tips">
+                    <h3>Tips to improve your score:</h3>
+                    <ul>
+                        <li>Make loan payments on time</li>
+                        <li>Maintain a healthy bank balance</li>
+                        <li>Limit the number of active loans</li>
+                        <li>Build a longer account history</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan Application Modal -->
+    <div id="loanApplicationModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2><i class="fas fa-hand-holding-usd"></i> Loan Application</h2>
+                <span class="close" data-modal="loanApplicationModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="loan-info-grid">
+                    <div class="info-card">
+                        <h3>Your Credit Score</h3>
+                        <div class="info-value" id="appCreditScore">650</div>
+                    </div>
+                    <div class="info-card">
+                        <h3>Bank Balance</h3>
+                        <div class="info-value" id="appBankBalance">$0</div>
+                    </div>
+                    <div class="info-card">
+                        <h3>Interest Rate</h3>
+                        <div class="info-value" id="appInterestRate">15%</div>
+                    </div>
+                    <div class="info-card">
+                        <h3>Max Loan Amount</h3>
+                        <div class="info-value" id="appMaxAmount">$10,000</div>
+                    </div>
+                </div>
+
+                <div class="loan-form">
+                    <div class="form-group">
+                        <label for="loanAmount">Loan Amount ($)</label>
+                        <input type="number" id="loanAmount" min="1000" max="10000" step="100" placeholder="Enter amount">
+                        <div class="input-help">Minimum: $1,000 | Maximum: $10,000</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loanTerm">Loan Term (Days)</label>
+                        <select id="loanTerm">
+                            <option value="7">7 Days</option>
+                            <option value="10">10 Days</option>
+                            <option value="14">14 Days</option>
+                        </select>
+                    </div>
+
+                    <div class="loan-calculation">
+                        <h3>Loan Calculation</h3>
+                        <div class="calc-row">
+                            <span>Loan Amount:</span>
+                            <span id="calcLoanAmount">$0</span>
+                        </div>
+                        <div class="calc-row">
+                            <span>Interest:</span>
+                            <span id="calcInterest">$0</span>
+                        </div>
+                        <div class="calc-row total">
+                            <span>Total to Repay:</span>
+                            <span id="calcTotal">$0</span>
+                        </div>
+                        <div class="calc-row">
+                            <span>Daily Payment:</span>
+                            <span id="calcDailyPayment">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" data-close="loanApplicationModal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="submitLoanApplication">Apply for Loan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Loans Modal -->
+    <div id="activeLoansModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2><i class="fas fa-list"></i> Active Loans</h2>
+                <span class="close" data-modal="activeLoansModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="loans-container" id="activeLoansContainer">
+                    <!-- Loans will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-money-bill-wave"></i> Make Payment</h2>
+                <span class="close" data-modal="paymentModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="payment-form">
+                    <div class="form-group">
+                        <label for="paymentLoan">Select Loan</label>
+                        <select id="paymentLoan">
+                            <option value="">Select a loan to pay</option>
+                        </select>
+                    </div>
+                    
+                    <div class="loan-details" id="paymentLoanDetails" style="display: none;">
+                        <div class="detail-row">
+                            <span>Current Balance:</span>
+                            <span id="paymentCurrentBalance">$0</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Daily Payment:</span>
+                            <span id="paymentDailyAmount">$0</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Next Due:</span>
+                            <span id="paymentNextDue">-</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentAmount">Payment Amount ($)</label>
+                        <input type="number" id="paymentAmount" min="1" step="0.01" placeholder="Enter payment amount">
+                        <div class="payment-options">
+                            <button type="button" class="btn btn-small" id="payMinimum">Pay Minimum</button>
+                            <button type="button" class="btn btn-small" id="payFull">Pay in Full</button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" data-close="paymentModal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="submitPayment">Make Payment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Menu Modal -->
+    <div id="staffMenuModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-tie"></i> Staff Menu</h2>
+                <span class="close" data-modal="staffMenuModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="staff-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="issueLoans">Issue Loans</button>
+                        <button class="tab-button" data-tab="collections">Collections</button>
+                        <button class="tab-button" data-tab="reports">Reports</button>
+                    </div>
+
+                    <!-- Issue Loans Tab -->
+                    <div class="tab-content active" id="issueLoans">
+                        <div class="staff-form">
+                            <div class="form-group">
+                                <label for="staffCitizenId">Citizen ID</label>
+                                <input type="text" id="staffCitizenId" placeholder="Enter citizen ID">
+                                <button type="button" class="btn btn-small" id="lookupPlayer">Lookup</button>
+                            </div>
+                            
+                            <div class="player-info" id="playerInfo" style="display: none;">
+                                <h3>Player Information</h3>
+                                <div class="info-grid">
+                                    <div><span>Name:</span> <span id="playerName">-</span></div>
+                                    <div><span>Credit Score:</span> <span id="playerCreditScore">-</span></div>
+                                    <div><span>Active Loans:</span> <span id="playerActiveLoans">-</span></div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="staffLoanAmount">Loan Amount ($)</label>
+                                    <input type="number" id="staffLoanAmount" min="5000" max="500000" step="1000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="staffLoanTerm">Term (Days)</label>
+                                    <input type="number" id="staffLoanTerm" min="7" max="90" value="30">
+                                </div>
+                                <div class="form-group">
+                                    <label for="staffInterestRate">Interest Rate (%)</label>
+                                    <input type="number" id="staffInterestRate" min="3" max="35" step="0.1" value="10">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-primary" id="issueStaffLoan">Issue Loan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collections Tab -->
+                    <div class="tab-content" id="collections">
+                        <div class="collections-content">
+                            <h3>Collection Activities</h3>
+                            <p>Collection features coming soon...</p>
+                        </div>
+                    </div>
+
+                    <!-- Reports Tab -->
+                    <div class="tab-content" id="reports">
+                        <div class="reports-content">
+                            <h3>Company Reports</h3>
+                            <p>Reporting features coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <div class="loading-text">Processing...</div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
