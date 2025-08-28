@@ -180,14 +180,24 @@ function closeModal(modalId) {
     if (openModals.length === 0) {
         console.log('[Landon\'s Loans] No modals remaining, sending closeUI');
         // Post message to close NUI
-        fetch(`https://${GetParentResourceName()}/closeUI`, {
+        const resourceName = GetParentResourceName();
+        console.log('[Landon\'s Loans] Raw resource name (closeModal):', resourceName);
+        // Clean the resource name to match what FiveM expects
+        const cleanResourceName = resourceName.replace(/[^a-zA-Z0-9-_]/g, '');
+        const url = `https://${cleanResourceName}/closeUI`;
+        console.log('[Landon\'s Loans] Cleaned resource name (closeModal):', cleanResourceName);
+        console.log('[Landon\'s Loans] Sending closeUI from closeModal to:', url);
+        fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({})
-        }).then(() => {
-            console.log('[Landon\'s Loans] closeUI message sent successfully');
+        }).then(response => {
+            console.log('[Landon\'s Loans] closeModal fetch response:', response.status, response.statusText);
+            return response.text();
+        }).then(data => {
+            console.log('[Landon\'s Loans] closeModal response data:', data);
         }).catch(err => {
-            console.error('[Landon\'s Loans] Failed to send closeUI message:', err);
+            console.error('[Landon\'s Loans] Failed to send closeUI message from closeModal:', err);
         });
     } else {
         console.log('[Landon\'s Loans] Still have open modals, NOT sending closeUI');
@@ -202,13 +212,22 @@ function closeAllModals() {
     document.body.style.overflow = 'auto';
     
     // Always close NUI when closing all modals
-    console.log('[Landon\'s Loans] Sending closeUI message to client');
-    fetch(`https://${GetParentResourceName()}/closeUI`, {
+    const resourceName = GetParentResourceName();
+    console.log('[Landon\'s Loans] Raw resource name:', resourceName);
+    // Clean the resource name to match what FiveM expects
+    const cleanResourceName = resourceName.replace(/[^a-zA-Z0-9-_]/g, '');
+    const url = `https://${cleanResourceName}/closeUI`;
+    console.log('[Landon\'s Loans] Cleaned resource name:', cleanResourceName);
+    console.log('[Landon\'s Loans] Sending closeUI message to:', url);
+    fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
-    }).then(() => {
-        console.log('[Landon\'s Loans] closeUI message sent successfully');
+    }).then(response => {
+        console.log('[Landon\'s Loans] closeUI fetch response:', response.status, response.statusText);
+        return response.text();
+    }).then(data => {
+        console.log('[Landon\'s Loans] closeUI response data:', data);
     }).catch(err => {
         console.error('[Landon\'s Loans] Failed to send closeUI message:', err);
     });
