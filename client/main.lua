@@ -172,11 +172,10 @@ function ShowCreditScoreUI(creditScore)
         creditRating = "Very Good"
     end
     
-    -- Close any existing UI first
-    if isUIOpen then
-        SetNuiFocus(false, false)
-        Wait(50)
-    end
+    -- Always ensure clean state first
+    SetNuiFocus(false, false)
+    isUIOpen = false
+    Wait(100) -- Give time for cleanup
     
     print("[Landon's Loans] Sending NUI message for credit score UI")
     SendNUIMessage({
@@ -197,11 +196,10 @@ end
 function ShowLoanApplicationUI(loanData)
     print("[Landon's Loans] ShowLoanApplicationUI called")
     
-    -- Close any existing UI first
-    if isUIOpen then
-        SetNuiFocus(false, false)
-        Wait(50)
-    end
+    -- Always ensure clean state first
+    SetNuiFocus(false, false)
+    isUIOpen = false
+    Wait(100) -- Give time for cleanup
     
     SendNUIMessage({
         type = "showLoanApplication",

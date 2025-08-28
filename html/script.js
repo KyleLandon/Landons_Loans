@@ -164,15 +164,20 @@ function openModal(modalId) {
 }
 
 function closeModal(modalId) {
+    console.log('[Landon\'s Loans] closeModal called for:', modalId);
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
     
-    // Only close NUI focus if no other modals are open
+    // Check if any modals are still open
     const openModals = document.querySelectorAll('.modal[style*="block"]');
+    console.log('[Landon\'s Loans] Open modals remaining:', openModals.length);
+    
+    // Only close NUI focus if no other modals are open
     if (openModals.length === 0) {
+        console.log('[Landon\'s Loans] No modals remaining, sending closeUI');
         // Post message to close NUI
         fetch(`https://${GetParentResourceName()}/closeUI`, {
             method: 'POST',
@@ -205,7 +210,7 @@ function closeAllModals() {
 // Credit Score Display
 function showCreditScore(data) {
     console.log('[Landon\'s Loans] showCreditScore called with data:', data);
-    closeAllModals();
+    // Don't close all modals here - we're about to open one
     
     const scoreNumber = document.getElementById('creditScoreNumber');
     const creditRating = document.getElementById('creditRating');
@@ -231,7 +236,8 @@ function showCreditScore(data) {
 
 // Loan Application
 function showLoanApplication(data) {
-    closeAllModals();
+    console.log('[Landon\'s Loans] showLoanApplication called, NOT calling closeAllModals');
+    // Don't close all modals here - we're about to open one
     currentLoanData = data;
     
     // Update info cards
@@ -463,8 +469,8 @@ function submitLoanApplication() {
         return response.text();
     }).then(data => {
         console.log('[Landon\'s Loans] Response data:', data);
-        // Close the modal after successful submission
-        closeAllModals();
+        // Don't close the modal here - let the server handle it
+        console.log('[Landon\'s Loans] Loan application submitted successfully');
     }).catch(error => {
         console.error('[Landon\'s Loans] Fetch error:', error);
     });
