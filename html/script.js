@@ -132,6 +132,9 @@ window.addEventListener('message', function(event) {
         case 'showProgress':
             showProgress(data.data.message, data.data.duration);
             break;
+        case 'forceClose':
+            closeAllModals();
+            break;
     }
 });
 
@@ -151,12 +154,16 @@ function closeModal(modalId) {
         document.body.style.overflow = 'auto';
     }
     
-    // Post message to close NUI
-    fetch(`https://${GetParentResourceName()}/closeUI`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
-    });
+    // Only close NUI focus if no other modals are open
+    const openModals = document.querySelectorAll('.modal[style*="block"]');
+    if (openModals.length === 0) {
+        // Post message to close NUI
+        fetch(`https://${GetParentResourceName()}/closeUI`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        });
+    }
 }
 
 function closeAllModals() {
@@ -164,6 +171,13 @@ function closeAllModals() {
         modal.style.display = 'none';
     });
     document.body.style.overflow = 'auto';
+    
+    // Always close NUI when closing all modals
+    fetch(`https://${GetParentResourceName()}/closeUI`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+    });
 }
 
 // Credit Score Display
@@ -526,14 +540,16 @@ function showProgress(message, duration = 3000) {
 
 // Escape key handler
 document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' || event.keyCode === 27) {
+        event.preventDefault();
         closeAllModals();
-        fetch(`https://${GetParentResourceName()}/closeUI`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({})
-        });
     }
+});
+
+// Also handle when window loses focus
+window.addEventListener('blur', function() {
+    // Don't auto-close on blur as it can be annoying
+    // User should explicitly close with ESC or clicking X
 });
 
 // Resource name helper

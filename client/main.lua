@@ -177,6 +177,12 @@ function ShowLoanApplicationUI(loanData)
 end
 
 function ShowActiveLoansUI(loans)
+    if isUIOpen then
+        -- Close any existing UI first
+        SetNuiFocus(false, false)
+        Wait(100)
+    end
+    
     SendNUIMessage({
         type = "showActiveLoans",
         data = {
@@ -227,6 +233,14 @@ end
 RegisterNUICallback('closeUI', function(data, cb)
     SetNuiFocus(false, false)
     isUIOpen = false
+    
+    -- Ensure cursor is disabled and player can move
+    DisplayRadar(true)
+    EnableControlAction(0, 1, true)  -- LookLeftRight
+    EnableControlAction(0, 2, true)  -- LookUpDown
+    EnableControlAction(0, 30, true) -- MoveLeftRight
+    EnableControlAction(0, 31, true) -- MoveUpDown
+    
     cb('ok')
 end)
 
@@ -289,12 +303,37 @@ RegisterNetEvent('landonsloans:notify', function(message, type)
     QBCore.Functions.Notify(message, type, 5000)
 end)
 
+-- Force close UI if it gets stuck
+CreateThread(function()
+    while true do
+        Wait(0)
+        if isUIOpen then
+            -- Force close on ESC key
+            if IsControlJustPressed(0, 322) then -- ESC key
+                SetNuiFocus(false, false)
+                isUIOpen = false
+                SendNUIMessage({type = "forceClose"})
+            end
+            
+            -- Disable some controls while UI is open
+            DisableControlAction(0, 1, true)   -- LookLeftRight
+            DisableControlAction(0, 2, true)   -- LookUpDown
+            DisableControlAction(0, 142, true) -- MeleeAttackAlternate
+            DisableControlAction(0, 18, true)  -- Enter/Confirm
+            DisableControlAction(0, 322, false) -- ESC (allow ESC to work)
+        end
+    end
+end)
+
 -- Cleanup
 AddEventHandler('onResourceStop', function(resourceName)
     if GetCurrentResourceName() == resourceName then
         if loanPed then
             DeleteEntity(loanPed)
         end
+        -- Ensure UI is closed on resource stop
+        SetNuiFocus(false, false)
+        isUIOpen = false
     end
 end)
 
