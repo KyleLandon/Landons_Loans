@@ -182,10 +182,10 @@ function closeModal(modalId) {
         // Post message to close NUI
         const resourceName = GetParentResourceName();
         console.log('[Landon\'s Loans] Raw resource name (closeModal):', resourceName);
-        // Clean the resource name to match what FiveM expects
-        const cleanResourceName = resourceName.replace(/[^a-zA-Z0-9-_]/g, '');
-        const url = `https://${cleanResourceName}/closeUI`;
-        console.log('[Landon\'s Loans] Cleaned resource name (closeModal):', cleanResourceName);
+        // Extract actual resource name from cfx-nui-[resourcename] format
+        const actualResourceName = resourceName.replace('cfx-nui-', '');
+        const url = `https://${actualResourceName}/closeUI`;
+        console.log('[Landon\'s Loans] Actual resource name (closeModal):', actualResourceName);
         console.log('[Landon\'s Loans] Sending closeUI from closeModal to:', url);
         fetch(url, {
             method: 'POST',
@@ -214,10 +214,10 @@ function closeAllModals() {
     // Always close NUI when closing all modals
     const resourceName = GetParentResourceName();
     console.log('[Landon\'s Loans] Raw resource name:', resourceName);
-    // Clean the resource name to match what FiveM expects
-    const cleanResourceName = resourceName.replace(/[^a-zA-Z0-9-_]/g, '');
-    const url = `https://${cleanResourceName}/closeUI`;
-    console.log('[Landon\'s Loans] Cleaned resource name:', cleanResourceName);
+    // Extract actual resource name from cfx-nui-[resourcename] format
+    const actualResourceName = resourceName.replace('cfx-nui-', '');
+    const url = `https://${actualResourceName}/closeUI`;
+    console.log('[Landon\'s Loans] Actual resource name:', actualResourceName);
     console.log('[Landon\'s Loans] Sending closeUI message to:', url);
     fetch(url, {
         method: 'POST',
