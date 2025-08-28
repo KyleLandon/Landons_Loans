@@ -252,6 +252,15 @@ local function ProcessEarlyPayoff(loanId, citizenid)
     }
 end
 
+-- Internal server events for automated systems
+RegisterNetEvent('landonsloans:server:processAutomaticPayments', function()
+    ProcessAutomaticPayments()
+end)
+
+RegisterNetEvent('landonsloans:server:checkForDefaults', function()
+    CheckForDefaults()
+end)
+
 -- Export functions
 exports('MakePayment', MakePayment)
 exports('ProcessAutomaticPayments', ProcessAutomaticPayments)

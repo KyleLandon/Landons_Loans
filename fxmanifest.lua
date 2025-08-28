@@ -1,9 +1,10 @@
 fx_version 'cerulean'
 game 'gta5'
 
+name 'LandonsLoans'
 author 'Landon\'s Loans Development'
 description 'Comprehensive Credit & Loan System for QBCore'
-version '1.0.0'
+version '1.0.1'
 
 shared_scripts {
     'shared/config.lua'

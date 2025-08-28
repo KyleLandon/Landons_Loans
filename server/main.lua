@@ -1,4 +1,5 @@
 local QBCore = exports['qb-core']:GetCoreObject()
+local resourceName = GetCurrentResourceName()
 
 -- Initialize Database
 CreateThread(function()
@@ -64,7 +65,7 @@ RegisterNetEvent('landonsloans:server:checkCreditScore', function()
     if not Player then return end
     
     local citizenid = Player.PlayerData.citizenid
-    local creditScore = exports['landons-loans']:GetCreditScore(citizenid)
+    local creditScore = exports[resourceName]:GetCreditScore(citizenid)
     
     TriggerClientEvent('landonsloans:client:showCreditScore', src, creditScore)
 end)
@@ -75,7 +76,7 @@ RegisterNetEvent('landonsloans:server:getActiveLoans', function()
     if not Player then return end
     
     local citizenid = Player.PlayerData.citizenid
-    local activeLoans = exports['landons-loans']:GetActiveLoans(citizenid)
+    local activeLoans = exports[resourceName]:GetActiveLoans(citizenid)
     
     TriggerClientEvent('landonsloans:client:showActiveLoans', src, activeLoans)
 end)
@@ -86,7 +87,7 @@ RegisterNetEvent('landonsloans:server:getActiveLoansForPayment', function()
     if not Player then return end
     
     local citizenid = Player.PlayerData.citizenid
-    local activeLoans = exports['landons-loans']:GetActiveLoans(citizenid)
+    local activeLoans = exports[resourceName]:GetActiveLoans(citizenid)
     
     TriggerClientEvent('landonsloans:client:showPaymentUI', src, activeLoans)
 end)
@@ -97,7 +98,7 @@ RegisterNetEvent('landonsloans:server:getEarlyPayoffQuote', function(loanId)
     if not Player then return end
     
     local citizenid = Player.PlayerData.citizenid
-    local result = exports['landons-loans']:ProcessEarlyPayoff(loanId, citizenid)
+    local result = exports[resourceName]:ProcessEarlyPayoff(loanId, citizenid)
     
     TriggerClientEvent('landonsloans:client:showEarlyPayoffQuote', src, result)
 end)
@@ -108,7 +109,7 @@ RegisterNetEvent('landonsloans:server:processEarlyPayoff', function(loanId)
     if not Player then return end
     
     local citizenid = Player.PlayerData.citizenid
-    local result = exports['landons-loans']:ProcessEarlyPayoff(loanId, citizenid)
+    local result = exports[resourceName]:ProcessEarlyPayoff(loanId, citizenid)
     
     if result.success then
         -- Check if player has enough money
@@ -121,14 +122,14 @@ RegisterNetEvent('landonsloans:server:processEarlyPayoff', function(loanId)
         Player.Functions.RemoveMoney('bank', result.payoffAmount, 'Early loan payoff to Landon\'s Loans')
         
         -- Update loan status
-        exports['landons-loans']:UpdateLoanStatus(loanId, 'paid')
+        exports[resourceName]:UpdateLoanStatus(loanId, 'paid')
         
         SendNotification(src, 'Loan paid off early! You saved $' .. result.discount .. ' in interest.', 'success')
         LogTransaction('payment_received', result.payoffAmount, 'Early payoff processed', citizenid, nil, loanId)
         UpdateCompanyBalance(result.payoffAmount)
         
         -- Update credit score
-        exports['landons-loans']:UpdateCreditScore(citizenid)
+        exports[resourceName]:UpdateCreditScore(citizenid)
     else
         SendNotification(src, result.reason, 'error')
     end
@@ -155,8 +156,8 @@ RegisterNetEvent('landonsloans:server:staffLookupPlayer', function(citizenid)
     end
     
     -- Get player info
-    local creditScore = exports['landons-loans']:GetCreditScore(citizenid)
-    local activeLoans = exports['landons-loans']:GetActiveLoans(citizenid)
+    local creditScore = exports[resourceName]:GetCreditScore(citizenid)
+    local activeLoans = exports[resourceName]:GetActiveLoans(citizenid)
     local playerName = "Unknown"
     
     -- Try to get player name
@@ -227,13 +228,13 @@ RegisterNetEvent('landonsloans:server:getLoanData', function()
     if not Player then return end
     
     local citizenid = Player.PlayerData.citizenid
-    local creditScore = exports['landons-loans']:GetCreditScore(citizenid)
-    local activeLoans = exports['landons-loans']:GetActiveLoans(citizenid)
-    local canGetLoan = exports['landons-loans']:CanGetAutomatedLoan(citizenid)
+    local creditScore = exports[resourceName]:GetCreditScore(citizenid)
+    local activeLoans = exports[resourceName]:GetActiveLoans(citizenid)
+    local canGetLoan = exports[resourceName]:CanGetAutomatedLoan(citizenid)
     
     local bankBalance = Player.PlayerData.money.bank
-    local maxLoanAmount = exports['landons-loans']:GetMaxLoanAmount(citizenid, 'automated')
-    local interestRate = exports['landons-loans']:GetInterestRate(creditScore, 'automated')
+    local maxLoanAmount = exports[resourceName]:GetMaxLoanAmount(citizenid, 'automated')
+    local interestRate = exports[resourceName]:GetInterestRate(creditScore, 'automated')
     
     local loanData = {
         creditScore = creditScore,
@@ -255,14 +256,14 @@ RegisterNetEvent('landonsloans:server:applyForLoan', function(amount, term)
     local citizenid = Player.PlayerData.citizenid
     
     -- Validate loan application
-    local canGetLoan = exports['landons-loans']:CanGetAutomatedLoan(citizenid)
+    local canGetLoan = exports[resourceName]:CanGetAutomatedLoan(citizenid)
     if not canGetLoan.success then
         SendNotification(src, canGetLoan.reason, 'error')
         return
     end
     
     -- Apply for the loan
-    local result = exports['landons-loans']:ApplyForLoan(citizenid, 'automated', amount, term, nil)
+    local result = exports[resourceName]:ApplyForLoan(citizenid, 'automated', amount, term, nil)
     
     if result.success then
         -- Add money to player's bank account
@@ -273,7 +274,7 @@ RegisterNetEvent('landonsloans:server:applyForLoan', function(amount, term)
         UpdateCompanyBalance(-amount)
         
         -- Update credit score
-        exports['landons-loans']:UpdateCreditScore(citizenid)
+        exports[resourceName]:UpdateCreditScore(citizenid)
     else
         SendNotification(src, result.reason, 'error')
     end
@@ -293,7 +294,7 @@ RegisterNetEvent('landonsloans:server:makePayment', function(loanId, amount)
     end
     
     -- Process payment
-    local result = exports['landons-loans']:MakePayment(loanId, amount, citizenid, 'manual')
+    local result = exports[resourceName]:MakePayment(loanId, amount, citizenid, 'manual')
     
     if result.success then
         -- Remove money from player
@@ -304,7 +305,7 @@ RegisterNetEvent('landonsloans:server:makePayment', function(loanId, amount)
         UpdateCompanyBalance(amount)
         
         -- Update credit score
-        exports['landons-loans']:UpdateCreditScore(citizenid)
+        exports[resourceName]:UpdateCreditScore(citizenid)
         
         if result.loanPaidOff then
             SendNotification(src, 'Congratulations! Your loan has been fully paid off.', 'success')
@@ -339,7 +340,7 @@ RegisterNetEvent('landonsloans:server:staffApplyLoan', function(targetCitizenid,
     local officerName = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
     
     -- Apply for the loan
-    local result = exports['landons-loans']:ApplyForLoan(targetCitizenid, 'player', amount, term, {
+    local result = exports[resourceName]:ApplyForLoan(targetCitizenid, 'player', amount, term, {
         citizenid = officerCitizenid,
         name = officerName,
         interestRate = interestRate
@@ -368,7 +369,7 @@ RegisterNetEvent('landonsloans:server:staffApplyLoan', function(targetCitizenid,
         SendNotification(src, 'You earned $' .. commission .. ' in commission.', 'success')
         
         -- Update credit score
-        exports['landons-loans']:UpdateCreditScore(targetCitizenid)
+        exports[resourceName]:UpdateCreditScore(targetCitizenid)
     else
         SendNotification(src, result.reason, 'error')
     end
@@ -396,7 +397,7 @@ QBCore.Commands.Add('creditcheck', 'Check someone\'s credit score (Staff Only)',
     end
     
     local citizenid = args[1]
-    local creditData = exports['landons-loans']:GetCreditScoreDetailed(citizenid)
+    local creditData = exports[resourceName]:GetCreditScoreDetailed(citizenid)
     
     if creditData then
         TriggerClientEvent('landonsloans:client:showStaffCreditData', src, creditData)
@@ -426,22 +427,22 @@ QBCore.Commands.Add('loanstatus', 'Check loan status for a player (Staff Only)',
     end
     
     local citizenid = args[1]
-    local loans = exports['landons-loans']:GetActiveLoans(citizenid)
+    local loans = exports[resourceName]:GetActiveLoans(citizenid)
     
     TriggerClientEvent('landonsloans:client:showStaffLoanData', src, loans, citizenid)
 end)
 
 -- Export functions for other resources
 exports('GetCreditScore', function(citizenid)
-    return exports['landons-loans']:GetCreditScore(citizenid)
+    return exports[resourceName]:GetCreditScore(citizenid)
 end)
 
 exports('GetActiveLoans', function(citizenid)
-    return exports['landons-loans']:GetActiveLoans(citizenid)
+    return exports[resourceName]:GetActiveLoans(citizenid)
 end)
 
 exports('ApplyForLoan', function(citizenid, loanType, amount, term, officer)
-    return exports['landons-loans']:ApplyForLoan(citizenid, loanType, amount, term, officer)
+    return exports[resourceName]:ApplyForLoan(citizenid, loanType, amount, term, officer)
 end)
 
 -- Start automated payment system
@@ -451,12 +452,12 @@ CreateThread(function()
         
         local currentTime = os.date('%H')
         if tonumber(currentTime) == Config.Payments.autoDeductionHour then
-            exports['landons-loans']:ProcessAutomaticPayments()
+            TriggerEvent('landonsloans:server:processAutomaticPayments')
         end
         
         -- Check for defaults every hour
         if tonumber(currentTime) % 1 == 0 then
-            exports['landons-loans']:CheckForDefaults()
+            TriggerEvent('landonsloans:server:checkForDefaults')
         end
     end
 end)
