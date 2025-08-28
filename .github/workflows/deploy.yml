@@ -1,0 +1,41 @@
+name: Deploy to FiveM Server
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to FiveM Server
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /opt/fivem/server-data/resources/[qb]/LandonsLoans
+          git pull origin main
+          
+          # Restart the resource
+          echo "restart LandonsLoans" > /tmp/fivem_command.txt
+          
+          # Optional: backup before update
+          cp -r /opt/fivem/server-data/resources/[qb]/LandonsLoans /opt/fivem/backups/LandonsLoans-$(date +%Y%m%d_%H%M%S)
+          
+          echo "✅ LandonsLoans updated successfully!"
+
+    - name: Notify Discord (Optional)
+      if: success()
+      uses: Ilshidur/action-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      with:
+        args: '🏦 **Landon'\''s Loans** has been updated on the server! 🚀'
