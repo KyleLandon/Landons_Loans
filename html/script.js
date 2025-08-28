@@ -423,28 +423,47 @@ function switchTab(tabName) {
 
 // Form Submissions
 function submitLoanApplication() {
+    console.log('[Landon\'s Loans] submitLoanApplication called');
+    
     const amount = parseFloat(document.getElementById('loanAmount').value);
     const term = parseInt(document.getElementById('loanTerm').value);
     
+    console.log('[Landon\'s Loans] Form values - Amount:', amount, 'Term:', term);
+    console.log('[Landon\'s Loans] Current loan data:', currentLoanData);
+    
     if (!amount || amount < 1000) {
+        console.log('[Landon\'s Loans] Validation failed - amount too low');
         showNotification('Please enter a valid loan amount (minimum $1,000)', 'error');
         return;
     }
     
     if (!currentLoanData || amount > currentLoanData.maxLoanAmount) {
+        console.log('[Landon\'s Loans] Validation failed - amount exceeds max');
         showNotification('Loan amount exceeds your maximum limit', 'error');
         return;
     }
     
+    console.log('[Landon\'s Loans] Validation passed, sending loan application');
     showProgress('Processing loan application...', 3000);
+    
+    const requestData = {
+        amount: amount,
+        term: term
+    };
+    
+    console.log('[Landon\'s Loans] Sending request data:', requestData);
     
     fetch(`https://${GetParentResourceName()}/applyForLoan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            amount: amount,
-            term: term
-        })
+        body: JSON.stringify(requestData)
+    }).then(response => {
+        console.log('[Landon\'s Loans] Fetch response received:', response);
+        return response.json();
+    }).then(data => {
+        console.log('[Landon\'s Loans] Response data:', data);
+    }).catch(error => {
+        console.error('[Landon\'s Loans] Fetch error:', error);
     });
 }
 

@@ -305,9 +305,13 @@ end)
 RegisterNetEvent('landonsloans:server:applyForLoan', function(amount, term)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return end
+    if not Player then 
+        print("[Landon's Loans] ERROR: Player not found for loan application")
+        return 
+    end
     
     local citizenid = Player.PlayerData.citizenid
+    print("[Landon's Loans] Processing loan application - Citizen: " .. citizenid .. ", Amount: $" .. tostring(amount) .. ", Term: " .. tostring(term) .. " days")
     
     -- Basic validation for now
     if amount < 1000 or amount > 10000 then

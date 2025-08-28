@@ -268,14 +268,20 @@ RegisterNUICallback('closeUI', function(data, cb)
 end)
 
 RegisterNUICallback('applyForLoan', function(data, cb)
+    print("[Landon's Loans] Client: NUI callback applyForLoan called with data:", json.encode(data))
+    
     local amount = tonumber(data.amount)
     local term = tonumber(data.term)
     
+    print("[Landon's Loans] Client: Parsed amount:", amount, "term:", term)
+    
     if not amount or not term then
+        print("[Landon's Loans] Client: Invalid loan parameters")
         cb({success = false, message = "Invalid loan parameters"})
         return
     end
     
+    print("[Landon's Loans] Client: Triggering server event with amount:", amount, "term:", term)
     TriggerServerEvent('landonsloans:server:applyForLoan', amount, term)
     
     SetNuiFocus(false, false)

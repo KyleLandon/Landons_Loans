@@ -1,7 +1,7 @@
 Config = {}
 
 -- Main Configuration
-Config.Debug = false
+Config.Debug = true
 Config.DefaultCreditScore = 650
 Config.MaxCreditScore = 850
 Config.MinCreditScore = 300
