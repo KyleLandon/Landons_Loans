@@ -103,9 +103,11 @@ function initializeEventListeners() {
 // NUI Message Handler
 window.addEventListener('message', function(event) {
     const data = event.data;
+    console.log('[Landon\'s Loans] Received NUI message:', data.type, data);
     
     switch(data.type) {
         case 'showCreditScore':
+            console.log('[Landon\'s Loans] Showing credit score UI');
             showCreditScore(data.data);
             break;
         case 'showLoanApplication':
@@ -182,11 +184,14 @@ function closeAllModals() {
 
 // Credit Score Display
 function showCreditScore(data) {
+    console.log('[Landon\'s Loans] showCreditScore called with data:', data);
     closeAllModals();
     
     const scoreNumber = document.getElementById('creditScoreNumber');
     const creditRating = document.getElementById('creditRating');
     const scoreCircle = document.querySelector('.score-circle');
+    
+    console.log('[Landon\'s Loans] Found elements:', scoreNumber, creditRating, scoreCircle);
     
     if (scoreNumber) scoreNumber.textContent = data.score;
     if (creditRating) creditRating.textContent = data.rating;
@@ -200,6 +205,7 @@ function showCreditScore(data) {
         else scoreCircle.classList.add('excellent');
     }
     
+    console.log('[Landon\'s Loans] Opening credit score modal');
     openModal('creditScoreModal');
 }
 

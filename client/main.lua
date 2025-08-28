@@ -87,6 +87,7 @@ end
 
 -- Check credit score
 function CheckCreditScore()
+    print("[Landon's Loans] Client: Requesting credit score check")
     TriggerServerEvent('landonsloans:server:checkCreditScore')
 end
 
@@ -94,6 +95,7 @@ end
 function OpenLoanUI()
     if isUIOpen then return end
     
+    print("[Landon's Loans] Client: Requesting loan data")
     -- Get loan data from server
     TriggerServerEvent('landonsloans:server:getLoanData')
 end
@@ -110,10 +112,12 @@ end
 
 -- Events
 RegisterNetEvent('landonsloans:client:showCreditScore', function(creditScore)
+    print("[Landon's Loans] Client: Received credit score: " .. tostring(creditScore))
     ShowCreditScoreUI(creditScore)
 end)
 
 RegisterNetEvent('landonsloans:client:receiveLoanData', function(loanData)
+    print("[Landon's Loans] Client: Received loan data - Credit Score: " .. tostring(loanData.creditScore))
     ShowLoanApplicationUI(loanData)
 end)
 
@@ -135,6 +139,8 @@ end)
 
 -- UI Functions
 function ShowCreditScoreUI(creditScore)
+    print("[Landon's Loans] ShowCreditScoreUI called with score: " .. tostring(creditScore))
+    
     local scoreColor = "green"
     if creditScore < 600 then
         scoreColor = "red"
@@ -153,6 +159,7 @@ function ShowCreditScoreUI(creditScore)
         creditRating = "Very Good"
     end
     
+    print("[Landon's Loans] Sending NUI message for credit score UI")
     SendNUIMessage({
         type = "showCreditScore",
         data = {
@@ -164,6 +171,7 @@ function ShowCreditScoreUI(creditScore)
     
     SetNuiFocus(true, true)
     isUIOpen = true
+    print("[Landon's Loans] Credit score UI should now be visible")
 end
 
 function ShowLoanApplicationUI(loanData)
